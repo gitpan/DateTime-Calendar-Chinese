@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.37.
+signed via the Module::Signature module, version 0.38.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -14,17 +14,21 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 922f4d8bfb5c346dccc6819d5e0f66d0b07f95f2 Build.PL
-SHA1 4e80acdda817ee5a05fe589e0a4f32a72e99e662 CHANGES
+SHA1 f943872f17050c71bfa066aa7cef63447bb26fc1 Build.PL
+SHA1 6b90e19ce066ae43955b435c58f6f56a0e6bcf02 CHANGES
 SHA1 3933b8775a7af6f0ae9dd661c838554bdc41fa63 LICENSE
-SHA1 37f36de7dbe7cb5f66f140176219f53be96f0743 MANIFEST
-SHA1 39854ea8f8f76db551a707c79f5a15634fc8cbd0 lib/DateTime/Calendar/Chinese.pm
-SHA1 58a89eb38edefe8fc1c6f46a99433f7eeac6603a t/01-sanity.t
+SHA1 0f17af43033c89b91b6da73eb3479709359ee259 MANIFEST
+SHA1 b8c680b9cdfbc50d56f40726954606fe1f7de48a META.yml
+SHA1 faec519f213f7e603ecd1420d147b35713757738 Makefile.PL
+SHA1 5d5d6d2532b049733e4cc56eda396d8bbd0d86ad lib/DateTime/Calendar/Chinese.pm
+SHA1 8e01d19a989674fc4fa827c9bad2352b9466f43c t/01-sanity.t
+SHA1 f8b777cbca0e1d6047908c1676a62e42ddcb4647 t/02-edge.t
+SHA1 16b35d756cac0040b2c939755f80fcea2fd9e6dc t/99-extended.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.0.6 (GNU/Linux)
 Comment: For info see http://www.gnupg.org
 
-iD8DBQFAA3xXpIZqybP6lHMRAun9AJ9bNFQaRvjsoSrgb6rbOvpom4QKGACfSW7l
-RplS9gt3Sfb2o4d0hU3MKtA=
-=2Ffl
+iD8DBQFAEsy1pIZqybP6lHMRApDMAJ4vbgPVyUoHhLcXDiXarM/yttPn3gCgv0sL
+7NmdbZshIfxAoOY6pW75TII=
+=+raS
 -----END PGP SIGNATURE-----

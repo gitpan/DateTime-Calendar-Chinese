@@ -1,5 +1,21 @@
 Changes
 =======
 
+0.02 24 Jan 2004
+[ The "Darn, Astronomical Calendars Are Hard" Release ]
+  - Now the time_zone parameter defaults to Asia/Shanghai, so that
+    dates by default align with Chinese Calendar
+  - Added elapsed_years()
+  - Fixed MANIFEST
+  - Fixed really nasty bug in the edge case for going from a non-leap
+    year to a leap year by requiring DateTime::Event::SolarTerm 0.02,
+    which fixes no_major_term_on.
+  - Fixed another really nasty bug caused by operator precedence of ? :
+  - Fixed _calc_gregorian_components() which was triggered from set()
+  - Fixed set() to correctly set the time components
+  - Fixed new()'s validation args (missing defaults)
+  - Fixed now()
+  - Require DateTime::Event::Chinese 0.02
+
 0.01 12 Jan 2004
   - initial release

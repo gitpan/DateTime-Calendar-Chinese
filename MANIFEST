@@ -3,6 +3,10 @@ CHANGES
 lib/DateTime/Calendar/Chinese.pm
 LICENSE
 MANIFEST
+Makefile.PL
+META.yml
 t/01-sanity.t
+t/02-edge.t
+t/99-extended.t
 
 SIGNATURE    Added here by Module::Build
