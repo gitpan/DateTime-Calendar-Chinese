@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: DateTime-Calendar-Chinese
-version: 0.03
+version: 0.04
 author:
   - Daisuke Maki E<lt>daisuke@cpan.orgE<gt>
 abstract: Traditional Chinese Calendar Implementation
@@ -22,5 +22,5 @@ conflicts: {}
 provides:
   DateTime::Calendar::Chinese:
     file: lib/DateTime/Calendar/Chinese.pm
-    version: 0.03
+    version: 0.04
 generated_by: Module::Build version 0.22

@@ -3,7 +3,7 @@ use strict;
 use vars qw($VERSION);
 BEGIN
 {
-    $VERSION = '0.03';
+    $VERSION = '0.04';
 
     if ( $] >= 5.006 )
     {
@@ -109,6 +109,7 @@ sub minute        { $_[0]->{gregorian}->minute }
 sub second        { $_[0]->{gregorian}->second }
 sub nanosecond    { $_[0]->{gregorian}->nanosecond }
 sub day_of_week   { $_[0]->{gregorian}->day_of_week }
+sub time_zone     { $_[0]->{gregorian}->time_zone }
 sub set_time_zone { shift->{gregorian}->set_time_zone(@_) }
 
 # XXX - accessors for DT::C::C specific fields
@@ -573,6 +574,14 @@ that can be set are restricted to the Chinese ones ("cycle", "cycle_year",
 "month", "leap_month", "day"). The time components are the same as 
 that of DateTime (See L<CAVEATS|/CAVEATS>).
 
+=head2 set_time_zone
+
+Sets the time zone. This method is identical to that of DateTime.
+
+=head2 time_zone
+
+Gets the time zone. This method is identical to that of DateTime.
+
 =head2 utc_rd_values()
 
 Returns the current UTC Rata Die days, seconds, and nanoseconds as a three
@@ -589,7 +598,7 @@ Returns the current year in the current cycle.
 
 =head2 month
 
-Returns the current month.
+Returns the current lunar month.
 
 =head2 leap_month
 
@@ -597,7 +606,7 @@ Returns true if the current month is a leap month.
 
 =head2 day
 
-Returns the current day.
+Returns the current day in the lunar month.
 
 =head2 elapsed_year
 
