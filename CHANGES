@@ -1,6 +1,12 @@
 Changes
 =======
 
+0.03 24 Jan 2004
+  - It's good to be able to access CVS.
+  - Added methods to get the Chinese year name, as well as just the
+    celestial stem or the terrestrial branch.  Dave Rolsky.
+  - Added a method to return the zodiac animal for the year.  Dave Rolsky.
+
 0.02 24 Jan 2004
 [ The "Darn, Astronomical Calendars Are Hard" Release ]
   - Now the time_zone parameter defaults to Asia/Shanghai, so that

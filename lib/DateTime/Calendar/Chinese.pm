@@ -3,7 +3,12 @@ use strict;
 use vars qw($VERSION);
 BEGIN
 {
-    $VERSION = '0.02';
+    $VERSION = '0.03';
+
+    if ( $] >= 5.006 )
+    {
+        require utf8; utf8->import;
+    }
 }
 
 use DateTime;
@@ -112,6 +117,87 @@ sub cycle_year { $_[0]->{cycle_year} }
 sub month      { $_[0]->{month} }
 sub leap_month { $_[0]->{leap_month} }
 sub day        { $_[0]->{day} }
+
+my @celestial_stems =
+    ( "ç²",
+      "ä¹",
+      "ä¸",
+      "ä¸",
+      "æ",
+      "å·±",
+      "åº",
+      "è¾",
+      "å£¬",
+      "ç¸",
+    );
+
+my @celestial_stems_py =
+    qw( jia3
+        yi3
+        bing3
+        ding1
+        wu4
+        ji3
+        geng1
+        xin1
+        ren2
+        gui3
+      );
+
+my @terrestrial_branches =
+    ( "å­",
+      "ä¸",
+      "å¯",
+      "å¯",
+      "è¾°",
+      "å·³",
+      "å",
+      "æª",
+      "ç³",
+      "é",
+      "æ",
+      "äº¥",
+    );
+
+my @terrestrial_branches_py =
+    qw( zi
+        chou3
+        yin2
+        mao3
+        chen2
+        si4
+        wu3
+        wei4
+        shen1
+        you3
+        xu1
+        hai4
+      );
+
+my @zodiac_animals =
+    qw( rat
+        ox
+        tiger
+        hare
+        dragon
+        snake
+        horse
+        sheep
+        monkey
+        fowl
+        dog
+        pig
+      );
+
+sub celestial_stem     { $celestial_stems[ amod( $_[0]->cycle_year, 10 ) - 1 ] }
+sub terrestrial_branch { $terrestrial_branches[ amod( $_[0]->cycle_year, 12 ) - 1 ] }
+sub year_name          { $_[0]->celestial_stem . $_[0]->terrestrial_branch }
+
+sub celestial_stem_py     { $celestial_stems_py[ amod( $_[0]->cycle_year, 10 ) - 1 ] }
+sub terrestrial_branch_py { $terrestrial_branches_py[ amod( $_[0]->cycle_year, 12 ) - 1 ] }
+sub year_name_py          { $_[0]->celestial_stem_py . $_[0]->terrestrial_branch_py }
+
+sub zodiac_animal         { $zodiac_animals[ amod( $_[0]->cycle_year, 12 ) - 1 ] }
 
 my %SetValidate;
 foreach my $key (keys %BasicValidate) {
@@ -394,38 +480,44 @@ The Chinese calendar described in [1] is expressed in terms of "cycle",
 
 Traditional Chinese years have been counted using the "Sexagecimal Cycle
 of Names", which is a cycle of 60 names for each year. The names are
-the combination of a "celestial stem" (tian gan), with a "terrestial branch"
-(di zhi):
+the combination of a "celestial stem" (tian1 gan1), with a "terrestrial branch"
+(di4 zhi1):
 
-    Celestial Stems         Terrestial Branches
+    Celestial Stems         Terrestrial Branches
   -------------------     -----------------------
-  | Jia             |     | Zi (Rat)            |
+  | Jia3            |     | Zi (Rat)            |
   -------------------     -----------------------
-  | Yi              |     | Chou (Ox)           |
+  | Yi3             |     | Chou3 (Ox)          |
   -------------------     -----------------------
-  | Bing            |     | Yin (Tiger)         |
+  | Bing3           |     | Yin2 (Tiger)        |
   -------------------     -----------------------
-  | Ding            |     | Mao (Hare)          |
+  | Ding1           |     | Mao3 (Hare)         |
   -------------------     -----------------------
-  | Wu              |     | Chen (Dragon)       |
+  | Wu4             |     | Chen2 (Dragon)      |
   -------------------     -----------------------
-  | Ji              |     | Si (Snake)          |
+  | Ji3             |     | Si4 (Snake)         |
   -------------------     -----------------------
-  | Geng            |     | Wu (Horse)          |
+  | Geng1           |     | Wu3 (Horse)         |
   -------------------     -----------------------
-  | Xin             |     | Wei (Sheep)         |
+  | Xin1            |     | Wei4 (Sheep)        |
   -------------------     -----------------------
-  | Ren             |     | Shen (Monkey)       |
+  | Ren2            |     | Shen1 (Monkey)      |
   -------------------     -----------------------
-  | Gui             |     | You (Fowl)          |
+  | Gui3            |     | You3 (Fowl)         |
   -------------------     -----------------------
-                          | Xu (Dog)            |
+                          | Xu1 (Dog)           |
                           -----------------------
-                          | Hai (Pig)           |
+                          | Hai4 (Pig)          |
                           -----------------------
 
-Names are assigned by running each list sequentially, so the first year
-woud be jiazi, then yuchou, bingyin, and so on. 
+Names are assigned by running each list sequentially, so the first
+year woud be jia1zi, then yi3chou3, bing1yin2, and so on.  The numbers
+after each syllable indicates the tone used for the syllable.
+
+The animal names of the Chinese "Zodiac" are I<not> translations of
+the terrestrial branches, which have different meanings.  For example,
+the first branch, "zi", can mean "child" or "son", as well as several
+other things.
 
 Chinese months are true lunar months, which starts on a new moon and runs
 until the day before the next new moon. Therefore each month consists of
@@ -512,6 +604,35 @@ Returns the current day.
 This returns the number of years elapsed since the Chinese Epoch as defined
 by [1] (Which is 15 Feb. -2646 gregorian). Some documents use different
 epoch dates, and hence this may not match with whatever source you have. 
+
+=head2 year_name
+
+Returns the name of the year (the celestial stem and the terrestrial
+branch) as UTF8 (or a sequence of bytes in Perl 5.00503).
+
+=head2 celestial_stem
+
+Returns the celestial stem as UTF8 (or a sequence of bytes in Perl
+5.00503).
+
+=head2 terrestrial_branch
+
+Returns the terrestrial branch as UTF8 (or a sequence of bytes in Perl
+5.00503).
+
+=head2 year_name_py
+
+=head2 celestial_stem_py
+
+=head2 terrestrial_branch_py
+
+These methods return the various names in Pinyin, with the tones given
+as numbers at the end of each syllable.  The first terrestrial branch
+is generally pronounced without a tone, and is returned as "zi".
+
+=head2 zodiac_animal
+
+Returns the year's Zodiac animal.
 
 =head1 CAVEATS
 

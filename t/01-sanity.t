@@ -1,10 +1,13 @@
 #!perl
-use Test::More tests => 23;
+use Test::More tests => 38;
 BEGIN
 {
-    print STDERR 
-        "\n*** This test will take a long time, please be patient ***\n",
-        "*** Starting on ", scalar(localtime), "\n";
+    if ( $] >= 5.006 )
+    {
+        require utf8; utf8->import;
+    }
+    diag( "\n*** This test will take a long time, please be patient ***\n",
+          "*** Starting on ", scalar(localtime), "\n" );
     use_ok("DateTime::Calendar::Chinese");
 }
 
@@ -16,12 +19,16 @@ $cc    = DateTime::Calendar::Chinese->from_object(object => $dt);
 
 can_ok($cc, "cycle", "cycle_year", "month", "leap_month", "day",
       "utc_rd_values");
-check_cc($cc, 78, 20, 12, 10, $dt->day_of_week, ($dt->utc_rd_values())[0]);
+check_cc($cc, 78, 20, 12, 10, $dt->day_of_week, ($dt->utc_rd_values())[0],
+         "ç¸", "æª", 'gui3', 'wei4', 'sheep',
+        );
 
 my $dt2 = DateTime->new(year => 2003, month => 11, day => 25, time_zone => 'Asia/Taipei');
 
 $cc->set(month => 11, day => 3);
-check_cc($cc, 78, 20, 11, 3, $dt2->day_of_week, ($dt2->utc_rd_values())[0]);
+check_cc($cc, 78, 20, 11, 3, $dt2->day_of_week, ($dt2->utc_rd_values())[0],
+         "ç¸", "æª", 'gui3', 'wei4', 'sheep',
+        );
 
 $cc    = DateTime::Calendar::Chinese->new(
     cycle      => 78,
@@ -30,12 +37,16 @@ $cc    = DateTime::Calendar::Chinese->new(
     day        => 10,
     time_zone  => 'Asia/Taipei'
 );
-check_cc($cc, 78, 20, 12, 10, $dt->day_of_week, ($dt->utc_rd_values())[0]);
+check_cc($cc, 78, 20, 12, 10, $dt->day_of_week, ($dt->utc_rd_values())[0],
+         "ç¸", "æª", 'gui3', 'wei4', 'sheep',
+        );
 
 
 sub check_cc
 {
-    my($cc, $cc_cycle, $cc_cycle_year, $cc_month, $cc_day, $cc_day_of_week, $cc_rd_days) = @_;
+    my($cc, $cc_cycle, $cc_cycle_year, $cc_month, $cc_day, $cc_day_of_week, $cc_rd_days,
+       $cc_celestial, $cc_terrestrial, $cc_celestial_py, $cc_terrestrial_py,
+       $cc_zodiac_animal) = @_;
 
     isa_ok($cc, "DateTime::Calendar::Chinese");
     
@@ -44,7 +55,13 @@ sub check_cc
     is($cc->month,       $cc_month);
     is($cc->day,         $cc_day);
     is($cc->day_of_week, $cc_day_of_week);
-    
+
+    is($cc->celestial_stem, $cc_celestial);
+    is($cc->terrestrial_branch, $cc_terrestrial);
+    is($cc->celestial_stem_py, $cc_celestial_py);
+    is($cc->terrestrial_branch_py, $cc_terrestrial_py);
+    is($cc->zodiac_animal, $cc_zodiac_animal);
+
     my @vals = $cc->utc_rd_values();
     is($vals[0], $cc_rd_days);
 }
