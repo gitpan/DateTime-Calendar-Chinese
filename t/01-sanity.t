@@ -49,19 +49,38 @@ sub check_cc
        $cc_zodiac_animal) = @_;
 
     isa_ok($cc, "DateTime::Calendar::Chinese");
-    
-    is($cc->cycle,       $cc_cycle);
-    is($cc->cycle_year,  $cc_cycle_year);
-    is($cc->month,       $cc_month);
-    is($cc->day,         $cc_day);
-    is($cc->day_of_week, $cc_day_of_week);
+    is($cc->cycle,
+        $cc_cycle,
+        "cycle should be $cc_cycle. value is " . $cc->cycle);
+    is($cc->cycle_year,
+        $cc_cycle_year,
+        "cycle_year should be $cc_cycle_year. value is " . $cc->cycle_year);
+    is($cc->month,
+        $cc_month,
+        "month should be $cc_month. value is " . $cc->month);
+    is($cc->day,
+        $cc_day,
+        "day should be $cc_day. value is " . $cc->day);
+    is($cc->day_of_week,
+        $cc_day_of_week,
+        "day_of_week should be $cc_day_of_week. value is " . $cc->day_of_week);
 
-    is($cc->celestial_stem, $cc_celestial);
-    is($cc->terrestrial_branch, $cc_terrestrial);
-    is($cc->celestial_stem_py, $cc_celestial_py);
-    is($cc->terrestrial_branch_py, $cc_terrestrial_py);
-    is($cc->zodiac_animal, $cc_zodiac_animal);
+    is($cc->celestial_stem,
+        $cc_celestial,
+        "celestial_stem should be $cc_celestial. value is " . $cc->celestial_stem);
+    is($cc->terrestrial_branch,
+        $cc_terrestrial,
+        "terrestrial_branch should be $cc_terrestrial. value is " . $cc->terrestrial_branch);
+    is($cc->celestial_stem_py,
+        $cc_celestial_py,
+        "celestial_stem_py should be $cc_celestial_py. value is " . $cc->celestial_stem_py);
+    is($cc->terrestrial_branch_py,
+        $cc_terrestrial_py,
+        "terrestrial_branch should be $cc_terrestrial_py. value is " . $cc->terrestrial_branch_py);
+    is($cc->zodiac_animal,
+        $cc_zodiac_animal,
+        "zodiac_animal should be $cc_zodiac_animal. value is " . $cc->zodiac_animal);
 
     my @vals = $cc->utc_rd_values();
-    is($vals[0], $cc_rd_days);
+    is($vals[0], $cc_rd_days, "utc_rd_values (days) should be $cc_rd_days. value is $vals[0]");
 }

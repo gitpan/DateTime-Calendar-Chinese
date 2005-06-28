@@ -1,9 +1,14 @@
+# $Id: Chinese.pm,v 1.10 2005/06/28 02:18:20 lestrrat Exp $
+#
+# Daisuke Maki <dmaki@cpan.org>
+# All rights reserved.
+
 package DateTime::Calendar::Chinese;
 use strict;
 use vars qw($VERSION);
 BEGIN
 {
-    $VERSION = '0.04';
+    $VERSION = '0.05';
 
     if ( $] >= 5.006 )
     {
@@ -101,7 +106,7 @@ sub new
     $self;
 }
 
-# XXX - these values are proxies directly to the underlying DateTime
+# XXX - these values are proxied directly to the underlying DateTime
 # (Gregorian) object.
 sub utc_rd_values { $_[0]->{gregorian}->utc_rd_values }
 sub hour          { $_[0]->{gregorian}->hour }
@@ -675,7 +680,8 @@ on performance. I'm sure there's a lot that could be done.
 
 =head1 AUTHOR
 
-Daisuke Maki E<lt>daisuke@cpan.orgE<gt>
+(c) Copyright 2004-2005 Daisuke Maki E<lt>daisuke@cpan.orgE<gt>.
+All rights reserved.
 
 =head1 REFERENCES
 

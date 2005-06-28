@@ -9,5 +9,3 @@ t/01-sanity.t
 t/02-edge.t
 t/03-to_from.t
 t/99-extended.t
-
-SIGNATURE    Added here by Module::Build

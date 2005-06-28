@@ -1,19 +1,27 @@
 Changes
 =======
 
-0.04 30 Jan 2004
+Unless otherwise noted, all changes by Daiuske Maki <dmaki@cpan.org>
+
+0.05 - 28 Jun 2005
+  - Fix Build.PL create_makefile_pl to create 'traditional' Makefile.PL
+  - Update dependency (require newer modules). This fixes problems reported
+    by Dave Rolsky where make test fails.
+  - Slightly modify test
+
+0.04 - 30 Jan 2004
   - Was missing the time_zone() method, which makes a difference when
     you pass a DT::C::Chinese to a from_object() method for other
     calendards
   - Add test
 
-0.03 24 Jan 2004
+0.03 - 24 Jan 2004
   - It's good to be able to access CVS.
   - Added methods to get the Chinese year name, as well as just the
     celestial stem or the terrestrial branch.  Dave Rolsky.
   - Added a method to return the zodiac animal for the year.  Dave Rolsky.
 
-0.02 24 Jan 2004
+0.02 - 24 Jan 2004
 [ The "Darn, Astronomical Calendars Are Hard" Release ]
   - Now the time_zone parameter defaults to Asia/Shanghai, so that
     dates by default align with Chinese Calendar
@@ -29,5 +37,5 @@ Changes
   - Fixed now()
   - Require DateTime::Event::Chinese 0.02
 
-0.01 12 Jan 2004
+0.01 - 12 Jan 2004
   - initial release
