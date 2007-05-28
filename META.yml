@@ -1,26 +1,19 @@
---- #YAML:1.0
-name: DateTime-Calendar-Chinese
-version: 0.05
-author:
-  - |-
-    (c) Copyright 2004-2005 Daisuke Maki E<lt>daisuke@cpan.orgE<gt>.
-    All rights reserved.
+--- 
 abstract: Traditional Chinese Calendar Implementation
+author: (c) Copyright 2004-2007 Daisuke Maki <daisuke@endeworks.jp>.
+distribution_type: module
+generated_by: Module::Install version 0.67
 license: perl
-requires:
-  DateTime: 0
-  DateTime::Event::Chinese: '>= 0.04'
-  DateTime::Event::Lunar: '>= 0.04'
-  DateTime::Event::SolarTerm: '>= 0.04'
-  DateTime::Util::Astro::Common: '>= 0.02'
-  DateTime::Util::Astro::Moon: '>= 0.04'
-  DateTime::Util::Calc: '>= 0.08'
+meta-spec: 
+  url: http://module-build.sourceforge.net/META-spec-v1.3.html
+  version: 1.3
+name: DateTime-Calendar-Chinese
+no_index: 
+  directory: 
+    - inc
+    - t
+requires: 
+  DateTime::Event::Chinese: 0.05
   Math::Round: 0
   Params::Validate: 0
-recommends:
-  perl: 5.6.1
-provides:
-  DateTime::Calendar::Chinese:
-    file: lib/DateTime/Calendar/Chinese.pm
-    version: 0.05
-generated_by: Module::Build version 0.2607
+version: 0.07

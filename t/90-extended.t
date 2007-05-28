@@ -14,13 +14,13 @@
 BEGIN
 {
     require Test::More;
-    if ($ENV{DO_EXTENDED_CHINESE_TESTS}) {
+    if ($ENV{EXTENDED_CHINESE_TESTS}) {
         Test::More->import(tests => 366);
         diag("*** This test will take an eternity to finish! Beware...***");
         diag("Starting on " . scalar(localtime));
         use_ok("DateTime::Calendar::Chinese");
     } else {
-        Test::More->import(skip_all => "won't run extended tests unless explicitly specified");
+        Test::More->import(skip_all => "Enable EXTENDED_CHINESE_TESTS to run these tests");
     }
 }
 

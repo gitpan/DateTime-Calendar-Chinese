@@ -1,7 +1,12 @@
 Changes
 =======
 
-Unless otherwise noted, all changes by Daiuske Maki <dmaki@cpan.org>
+0.07 - 29 May 2007
+  - Migrate to Module::Install
+  - Require new version of DateTime::Event::Chinese
+
+0.06 (never released)
+  - Add POD tests.
 
 0.05 - 28 Jun 2005
   - Fix Build.PL create_makefile_pl to create 'traditional' Makefile.PL

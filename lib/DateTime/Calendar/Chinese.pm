@@ -1,14 +1,14 @@
-# $Id: Chinese.pm,v 1.10 2005/06/28 02:18:20 lestrrat Exp $
+# $Id: /local/datetime/modules/DateTime-Calendar-Chinese/trunk/lib/DateTime/Calendar/Chinese.pm 11710 2007-05-28T15:03:19.325281Z daisuke  $
 #
-# Daisuke Maki <dmaki@cpan.org>
-# All rights reserved.
+# Copyright (c) 2004-2007 Daisuke Maki <daisuke@endeworks.jp>
 
 package DateTime::Calendar::Chinese;
 use strict;
+use warnings;
 use vars qw($VERSION);
 BEGIN
 {
-    $VERSION = '0.05';
+    $VERSION = '0.07';
 
     if ( $] >= 5.006 )
     {
@@ -648,6 +648,18 @@ is generally pronounced without a tone, and is returned as "zi".
 
 Returns the year's Zodiac animal.
 
+=head2 day_of_week
+
+=head2 elapsed_years
+
+=head2 hour
+
+=head2 minute
+
+=head2 second
+
+=head2 nanosecond
+
 =head1 CAVEATS
 
 =head2 TIMEZONES
@@ -680,8 +692,14 @@ on performance. I'm sure there's a lot that could be done.
 
 =head1 AUTHOR
 
-(c) Copyright 2004-2005 Daisuke Maki E<lt>daisuke@cpan.orgE<gt>.
-All rights reserved.
+(c) Copyright 2004-2007 Daisuke Maki E<lt>daisuke@endeworks.jpE<gt>.
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+See http://www.perl.com/perl/misc/Artistic.html
 
 =head1 REFERENCES
 

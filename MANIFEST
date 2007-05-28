@@ -1,11 +1,23 @@
-Build.PL
 CHANGES
+inc/Module/AutoInstall.pm
+inc/Module/Install.pm
+inc/Module/Install/AutoInstall.pm
+inc/Module/Install/Base.pm
+inc/Module/Install/Can.pm
+inc/Module/Install/Fetch.pm
+inc/Module/Install/Include.pm
+inc/Module/Install/Makefile.pm
+inc/Module/Install/Metadata.pm
+inc/Module/Install/Win32.pm
+inc/Module/Install/WriteAll.pm
 lib/DateTime/Calendar/Chinese.pm
 LICENSE
-MANIFEST
 Makefile.PL
+MANIFEST			This list of files
 META.yml
 t/01-sanity.t
 t/02-edge.t
 t/03-to_from.t
-t/99-extended.t
+t/90-extended.t
+t/99_pod-coverage.t
+t/99_pod.t
