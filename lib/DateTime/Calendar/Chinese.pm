@@ -1,33 +1,24 @@
-# $Id: /local/datetime/modules/DateTime-Calendar-Chinese/trunk/lib/DateTime/Calendar/Chinese.pm 11710 2007-05-28T15:03:19.325281Z daisuke  $
-#
-# Copyright (c) 2004-2007 Daisuke Maki <daisuke@endeworks.jp>
-
 package DateTime::Calendar::Chinese;
+use 5.008;
 use strict;
-use warnings;
+use utf8;
 use vars qw($VERSION);
-BEGIN
-{
-    $VERSION = '0.07';
-
-    if ( $] >= 5.006 )
-    {
-        require utf8; utf8->import;
-    }
+BEGIN {
+    $VERSION = '0.99999';
 }
 
 use DateTime;
-use DateTime::Event::Chinese;
-use DateTime::Event::Lunar;
-use DateTime::Event::SolarTerm;
-use DateTime::Util::Astro::Common qw(MEAN_TROPICAL_YEAR);
-use DateTime::Util::Astro::Moon qw(MEAN_SYNODIC_MONTH);
-use DateTime::Util::Calc qw(moment dt_from_moment amod);
+use DateTime::Astro qw(MEAN_TROPICAL_YEAR MEAN_SYNODIC_MONTH moment dt_from_moment new_moon_after new_moon_before
+    solar_longitude_from_moment
+);
+use DateTime::Event::Chinese qw(chinese_new_year_before);
+use DateTime::Event::SolarTerm qw(prev_term_at no_major_term_on);
+use Params::Validate;
 use Math::Round qw(round);
-use Params::Validate();
 use constant GREGORIAN_CHINESE_EPOCH => DateTime->new(
     year => -2636, month => 2, day => 15, time_zone => 'UTC');
 use constant GREGORIAN_CHINESE_EPOCH_MOMENT => moment(GREGORIAN_CHINESE_EPOCH);
+use constant DEBUG => $ENV{PERL_DATETIME_CALENDAR_CHINESE_DEBUG};
 
 my %BasicValidate = (
     cycle => {
@@ -195,15 +186,15 @@ my @zodiac_animals =
         pig
       );
 
-sub celestial_stem     { $celestial_stems[ amod( $_[0]->cycle_year, 10 ) - 1 ] }
-sub terrestrial_branch { $terrestrial_branches[ amod( $_[0]->cycle_year, 12 ) - 1 ] }
+sub celestial_stem     { $celestial_stems[ ( $_[0]->cycle_year % 10 || 10) - 1 ] }
+sub terrestrial_branch { $terrestrial_branches[ ( $_[0]->cycle_year % 12 || 12 ) - 1 ] }
 sub year_name          { $_[0]->celestial_stem . $_[0]->terrestrial_branch }
 
-sub celestial_stem_py     { $celestial_stems_py[ amod( $_[0]->cycle_year, 10 ) - 1 ] }
-sub terrestrial_branch_py { $terrestrial_branches_py[ amod( $_[0]->cycle_year, 12 ) - 1 ] }
+sub celestial_stem_py     { $celestial_stems_py[ ( $_[0]->cycle_year % 10 || 10 ) - 1 ] }
+sub terrestrial_branch_py { $terrestrial_branches_py[ ( $_[0]->cycle_year % 12 || 12 ) - 1 ] }
 sub year_name_py          { $_[0]->celestial_stem_py . $_[0]->terrestrial_branch_py }
 
-sub zodiac_animal         { $zodiac_animals[ amod( $_[0]->cycle_year, 12 ) - 1 ] }
+sub zodiac_animal         { $zodiac_animals[ ( $_[0]->cycle_year % 12 || 12 ) - 1 ] }
 
 my %SetValidate;
 foreach my $key (keys %BasicValidate) {
@@ -283,26 +274,18 @@ sub _calc_gregorian_components
         GREGORIAN_CHINESE_EPOCH_MOMENT + 
         (($self->cycle() - 1) * 60 + $self->cycle_year() - 1 + 0.5) *
         MEAN_TROPICAL_YEAR);
-    my $new_year = DateTime::Event::Chinese->new_year_before(
-        datetime     => dt_from_moment($mid_year),
-    );
+    my $new_year = chinese_new_year_before(dt_from_moment($mid_year) );
 
     # XXX - I don't know why I need to do $self->month() - 2 here
     my $p_dt = $new_year + DateTime::Duration->new(days => ($self->month() - 2) * 29);
-    my $p = DateTime::Event::Lunar->new_moon_after(
-        datetime    => $p_dt,
-#dt_from_moment( moment($new_year) + ($self->month - 1) * 29 ),
-        on_or_after => 1
-    );
+    my $p = new_moon_after( $p_dt );
     my $d = DateTime::Calendar::Chinese->from_object(object => $p);
 
     my $prior_new_moon;
     if ($d->month == $self->month && $d->leap_month == $self->leap_month) {
         $prior_new_moon = $p;
     } else {
-        $prior_new_moon = DateTime::Event::Lunar->new_moon_after(
-            datetime    => $p + DateTime::Duration->new(days => 1),
-            on_or_after => 1);
+        $prior_new_moon = new_moon_after( $p + DateTime::Duration->new(days => 1) );
     }
 
     my $tmp = $prior_new_moon + DateTime::Duration->new(days => $self->day - 1);
@@ -346,62 +329,46 @@ sub _calc_local_components
     my $self = shift;
     my $dt   = $self->{gregorian}->clone->truncate(to => 'day');
 
-    # last winter solstice
-    my $s1 = DateTime::Event::SolarTerm->prev_term_at(
-        datetime  => $dt,
-        longitude => 270);
+    # XXX TODO: Change these calculations to use moment, not DateTime
 
+    # last winter solstice
+    my $s1 = prev_term_at( $dt, 270 );
     # next winter solstice
-    my $s2 = DateTime::Event::SolarTerm->prev_term_at(
-        datetime  => $s1 + DateTime::Duration->new(days => 370),
-        longitude => 270);
+    my $s2 = prev_term_at( $s1 + DateTime::Duration->new(days => 370), 270 );
 
     # new moon after the last winter solstice (12th month in the last sui)
-    my $m12 = DateTime::Event::Lunar->new_moon_after(
-        datetime    => $s1 + DateTime::Duration->new(days => 1),
-        on_or_after => 1);
+    my $m12 = new_moon_after($s1 + DateTime::Duration->new(days => 1) );
 
     # new moon before the next winter solstice (11th month in the current sui)
-    my $next_m11 = DateTime::Event::Lunar->new_moon_before(
-        datetime => $s2 + DateTime::Duration->new(days => 1));
+    my $next_m11 = new_moon_before($s2 + DateTime::Duration->new(days => 1));
 
     # new moon before now.
-    my $m = DateTime::Event::Lunar->new_moon_before(
-        datetime => $dt + DateTime::Duration->new(days => 1)
-    );
+    my $m = new_moon_before($dt + DateTime::Duration->new(days => 1));
 
     # pre-compute and save a call to moment()
     my $m12_moment = moment($m12);
     my $m_moment   = moment($m);
+    my $m11_moment = moment($next_m11);
+
 
     # if there are 12 lunar months (29.5 days) between the last 12th month
     # and the next 11th month, then there must be a leap month some where
     my $leap_year =
-        $m12_moment != $m_moment &&
-        round((moment($next_m11) - $m12_moment) / MEAN_SYNODIC_MONTH) == 12;
+        round(($m11_moment - $m12_moment) / MEAN_SYNODIC_MONTH) == 12;
 
     # XXX - hey, there are a lot of paranthesis, but it's required or
     # else you get into some real unhappy problems
-    my $month = amod(
-        round( ($m_moment - $m12_moment) / MEAN_SYNODIC_MONTH) -
-        (($leap_year && $self->_prior_leap_month($m12, $m)) ? 1 : 0), 12);
-
-# XXX - debug stuff. nice to have when you're going "huh?"
-#print STDERR 
-#    ">>>>>>\n",
-#    "   dt: ", $dt->datetime, "\n",
-#    "   s1: ", $s1->datetime, "\n",
-#    "   s2: ", $s2->datetime, "\n",
-#    "  m12: ", $m12->datetime, "\n",
-#    "n_m11: ", $next_m11->datetime, "\n",
-#    "11-12: ", round( (moment($next_m11) - $m12_moment) / MEAN_SYNODIC_MONTH), "\n",
-#    "    m: ", $m->datetime, "\n",
-#    " leap: ", $leap_year ? "yes" : "no", "\n",
-#    "m-m12: ",
-#        round(abs($m_moment - $m12_moment) / MEAN_SYNODIC_MONTH), "\n",
-#    "pleap: ", $self->_prior_leap_month($m12, $m) ? "yes" : "no", "\n",
-#    "month: ", $month, "\n",
-#    "<<<<<<\n";
+    my $month;
+    {
+        my $x = round(($m_moment - $m12_moment) / MEAN_SYNODIC_MONTH);
+        if ($leap_year && $self->_prior_leap_month($m12, $m)) {
+            if (DEBUG) {
+                print STDERR ">>>> leap_year && prior_leap_mont $m12 : $m\n";
+            }
+            $x--;
+        }
+        $month = $x % 12 || 12;
+    }
 
     # XXX - tricky... we need to set month before calling elapsed_years,
     # because it will be used by that function
@@ -409,17 +376,53 @@ sub _calc_local_components
     my $elapsed_years = $self->elapsed_years;
 
     $self->{cycle}      = POSIX::floor( ($elapsed_years - 1) / 60) + 1;
-    $self->{cycle_year} = amod($elapsed_years, 60);
+    $self->{cycle_year} = $elapsed_years % 60 || 60;
     $self->{day}        = POSIX::ceil(moment($dt) - $m_moment + 1);
 
-    $self->{leap_month} = ($leap_year &&
-        DateTime::Event::SolarTerm->no_major_term_on(datetime => $m) &&
-        !$self->_prior_leap_month($m12, DateTime::Event::Lunar->new_moon_before(datetime => $m))) ? 1 : 0;
+    if ($leap_year && no_major_term_on($m)) {
+        my $end = new_moon_before($m - DateTime::Duration->new(days => 1));
+        $self->{leap_month} = ! $self->_prior_leap_month($m12, $end);
+    } else {
+        $self->{leap_month} = 0;
+    }
+
+    if (DEBUG) {
+        print STDERR 
+            ">>>>>>\n",
+            "        dt: ", $dt->datetime, "\n",
+            "        s1: ", $s1->datetime, "\n",
+            "        s2: ", $s2->datetime, "\n",
+            "       m12: ", $m12->datetime, "\n",
+            "     n_m11: ", $next_m11->datetime, "\n",
+            "     11-12: ", round( (moment($next_m11) - $m12_moment) / MEAN_SYNODIC_MONTH), "\n",
+            "         m: ", $m->datetime, "\n",
+            " leap year: ", $leap_year ? "yes" : "no", "\n",
+            "leap month: ", $self->{leap_month} ? "yes" : "no", "\n",
+            "     m-m12: ", round(abs($m_moment - $m12_moment) / MEAN_SYNODIC_MONTH), "\n",
+            "      sl_m: ", solar_longitude_from_moment($m_moment), "\n",
+            "    sl_m12: ", solar_longitude_from_moment($m12_moment), "\n",
+
+#            "pleap: ", $self->_prior_leap_month($m12, $m) ? "yes" : "no", "\n",
+            "     month: ", $month, "\n",
+            "   elapsed: ", $elapsed_years, "\n",
+            "     cycle: ", $self->{cycle}, "\n",
+            "cycle_year: ", $self->{cycle_year}, "\n",
+            "<<<<<<\n";
+    }
+
 }
 
 sub elapsed_years
 {
     my $self = shift;
+    if (DEBUG) {
+        print  STDERR
+            ">>>> elapsed_years\n",
+            "moment: ", moment($self->{gregorian}), "\n",
+            "epoch:  ", GREGORIAN_CHINESE_EPOCH_MOMENT, "\n",
+            "month:  ", $self->month, "\n",
+            "<<<<\n"
+    }
     return POSIX::floor(
         1.5 - $self->month / 12 + (moment($self->{gregorian}) - GREGORIAN_CHINESE_EPOCH_MOMENT) / MEAN_TROPICAL_YEAR);
 }
@@ -427,22 +430,32 @@ sub elapsed_years
 # [1] p.250
 sub _prior_leap_month
 {
-    my $class = shift;
-    my($start, $end) = @_;
+    my($class, $start, $end) = @_;
 
-    return ($start <= $end) && (
-        DateTime::Event::SolarTerm->no_major_term_on(datetime => $end) or
-        $class->_prior_leap_month($start,
-            DateTime::Event::Lunar->new_moon_before(datetime => $end) ) );
-}
-
-BEGIN
-{
-    if (eval { require Memoize } && !$@) {
-        Memoize::memoize("_prior_leap_month", NORMALIZER => sub {
-            join(".", ($_[0]->utc_rd_values)[0], ($_[1]->utc_rd_values)[0]);
-        });
+    if (DEBUG) {
+        print STDERR 
+            ">>>> prior_leap_month\n",
+            "caller: ", join(':', (caller)[1, 2]), "\n", 
+            "start: ", $start, "\n",
+            "end:   ", $end, "\n",
+            "<<<<\n";
     }
+
+    while ($start <= $end) {
+        if (no_major_term_on($end)) {
+            if (DEBUG) {
+                print STDERR " + prior_leap_month: there are no major terms on $end\n";
+            }
+            return 1;
+        }
+
+        $end = new_moon_before($end - DateTime::Duration->new(minutes => 30));
+    }
+    if (DEBUG) {
+        print " + prior_leap_month: nothing found, returning false\n";
+    }
+
+    return ();
 }
 
 1;

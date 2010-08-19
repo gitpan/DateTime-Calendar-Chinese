@@ -1,15 +1,7 @@
-#!perl
+use utf8;
+use strict;
 use Test::More tests => 38;
-BEGIN
-{
-    if ( $] >= 5.006 )
-    {
-        require utf8; utf8->import;
-    }
-    diag( "\n*** This test will take a long time, please be patient ***\n",
-          "*** Starting on ", scalar(localtime), "\n" );
-    use_ok("DateTime::Calendar::Chinese");
-}
+use_ok("DateTime::Calendar::Chinese");
 
 my $cc;
 # 1 Jan 2004 is cycle (78) year 20 (Gui-Wei [Sheep]) month 12, day 10

@@ -1,10 +1,6 @@
-#!perl
 use strict;
 use Test::More (tests => 4);
-BEGIN
-{
-    use_ok("DateTime::Calendar::Chinese");
-}
+use_ok("DateTime::Calendar::Chinese");
 
 my $dt = DateTime->now();
 my $cc1 = DateTime::Calendar::Chinese->from_object(object => $dt);
